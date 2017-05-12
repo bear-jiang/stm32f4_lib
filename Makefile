@@ -1,6 +1,6 @@
 $(shell mkdir ./obj 2>/dev/null )
 
-include ../makefile.common
+include ./makefile.common
 
 SRCDIR = ./STM32F4xx_StdPeriph_Driver/src 
 SRCDIR += ./CMSIS/Device/ST/STM32F4xx/Source/Templates
