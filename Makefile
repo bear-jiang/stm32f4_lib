@@ -42,5 +42,6 @@ $(STOBJ):%.o:%.c
 # #.INTERMEDIATE:./obj/*.o ./obj/*d
 
 clean:
-	-rm -rf obj
+	@-rm -rf obj
+	@echo "clean stlib"
 
