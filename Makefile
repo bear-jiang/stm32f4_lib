@@ -1,24 +1,30 @@
 $(shell mkdir ./obj 2>/dev/null )
-
-include ./makefile.common
+# built-in rules variable ------------------------------------------------------------
+CC = arm-none-eabi-gcc
+AR = arm-none-eabi-ar
+CFLAGS = -g -mtune=cortex-m4 -mthumb -std=c99 -fdata-sections -mfloat-abi=soft \
+ -march=armv7-m -mthumb-interwork -mapcs-frame
+CPPFLAGS = -DUSE_STDPERIPH_DRIVER -DSTM32F40XX -DSTM32F407xx $(INCLUDEDIR)
+TARGET_ARCH = 
+OUTPUT_OPTION = -o ./obj/$@
+ARFLAGS = rcs
+# ------------------------------------------------------------------------------------
 
 SRCDIR = ./STM32F4xx_StdPeriph_Driver/src 
 SRCDIR += ./CMSIS/Device/ST/STM32F4xx/Source/Templates
-INCDIR = ./STM32F4xx_StdPeriph_Driver/inc 
-INCDIR += ./CMSIS/Device/ST/STM32F4xx/Include
-INCDIR += ./CMSIS/Include
+
+INCDIR = $(shell find -name *stm32f4*.h)
+INCDIR += $(shell find -name core*.h)
+INCDIR :=$(dir $(INCDIR))
+INCDIR :=$(sort $(INCDIR))
+
 
 VPATH = $(SRCDIR) $(INCDIR)
 
-# vpath %.h ./STM32F4xx_StdPeriph_Driver/inc
-# vpath %.c ./STM32F4xx_StdPeriph_Driver/src
-# vpath %.h ./CMSIS/Device/ST/STM32F4xx/Include
-# vpath %.c ./CMSIS/Device/ST/STM32F4xx/Source
 vpath %.a ./obj
 vpath %.o ./obj
+vpath %.d ./obj
 
-# INCLUDEDIR += -I ./STM32F4xx_StdPeriph_Driver/inc
-# INCLUDEDIR += -I ./CMSIS/Device/ST/STM32F4xx/Include
 
 INCLUDEDIR = $(addprefix -I,$(INCDIR))
 
@@ -26,20 +32,20 @@ SRC = $(shell ls $(SRCDIR))
 SRC := $(filter %.c,$(SRC))
 SRC := $(filter-out %fmc.c,$(SRC))
 STOBJ = $(subst .c,.o,$(SRC))
+DEPENDS = $(subst .c,.d,$(SRC))
 
-# test:
-# 	@echo $(STOBJ)
+all:libst.a
+
+include $(SRC:%.c=obj/%.d)
+
 
 libst.a:$(STOBJ)
-	$(AR) rcs ./obj/$@ ./obj/*.o 
-$(STOBJ):%.o:%.c 
-	$(CC)  $(STFLAGS) $^ -o ./obj/$@
+	$(AR) $(ARFLAGS) ./obj/$@ ./obj/*.o 
 
-# # %.d:%.c 
-# # 	$(CC) $(INCLUDEDIR) -M $< >./obj/$@
+obj/%.d:%.c 
+	$(CC) -M $(CPPFLAGS) $< >> $@
 
 .PHONY:clean
-# #.INTERMEDIATE:./obj/*.o ./obj/*d
 
 clean:
 	@-rm -rf obj
