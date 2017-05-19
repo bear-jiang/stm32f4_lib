@@ -43,7 +43,7 @@ DEPENDS = $(subst .c,.d,$(SRC))
 
 all:libst.a
 
-include $(SRC:%.c=obj/%.d)
+sinclude $(SRC:%.c=obj/%.d)
 
 
 libst.a:$(STOBJ)
@@ -55,6 +55,8 @@ obj/%.d:%.c
 .PHONY:clean
 
 clean:
+	@-rm -rf obj/*.o obj/*.a
+	@echo "clean stlib"
+distclean:
 	@-rm -rf obj
 	@echo "clean stlib"
-
