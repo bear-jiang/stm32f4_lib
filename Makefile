@@ -52,7 +52,7 @@ libst.a:$(STOBJ)
 obj/%.d:%.c 
 	$(CC) -M $(CPPFLAGS) $< >> $@
 
-.PHONY:clean
+.PHONY:clean all distclean
 
 clean:
 	@-rm -rf obj/*.o obj/*.a
