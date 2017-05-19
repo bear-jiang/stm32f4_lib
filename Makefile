@@ -14,7 +14,7 @@ endif
 TARGET_ARCH = 
 OUTPUT_OPTION = -o ./obj/$@
 ARFLAGS = rcs
-CPPFLAGS += $(INCLUDEDIR)
+CPPFLAGS := $(filter-out -I%, $(CPPFLAGS) )
 # ------------------------------------------------------------------------------------
 
 SRCDIR = ./STM32F4xx_StdPeriph_Driver/src 
@@ -33,7 +33,7 @@ vpath %.o ./obj
 vpath %.d ./obj
 
 
-INCLUDEDIR = $(addprefix -I,$(INCDIR))
+CPPFLAGS += $(addprefix -I,$(INCDIR))
 
 SRC = $(shell ls $(SRCDIR))
 SRC := $(filter %.c,$(SRC))
@@ -52,7 +52,7 @@ libst.a:$(STOBJ)
 obj/%.d:%.c 
 	$(CC) -M $(CPPFLAGS) $< >> $@
 
-.PHONY:clean
+.PHONY:clean all distclean
 
 clean:
 	@-rm -rf obj/*.o obj/*.a
